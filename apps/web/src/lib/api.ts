@@ -1,6 +1,7 @@
 import type { OpsSnapshot, PublicConfig, RoomSnapshot, RoomSummary, SystemStatus } from "@paint-arena/shared";
 
 const ADMIN_TOKEN_KEY = "color-turf-admin-token";
+const apiBaseUrl = (import.meta.env.VITE_GAME_API_URL ?? "").replace(/\/$/, "");
 
 export const getAdminToken = () => localStorage.getItem(ADMIN_TOKEN_KEY) ?? "";
 export const setAdminToken = (token: string) => localStorage.setItem(ADMIN_TOKEN_KEY, token.trim());
@@ -8,7 +9,7 @@ export const clearAdminToken = () => localStorage.removeItem(ADMIN_TOKEN_KEY);
 
 const requestJson = async <T>(path: string, init?: RequestInit, admin = false): Promise<T> => {
   const token = admin ? getAdminToken() : "";
-  const response = await fetch(path, {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
     ...init,
     headers: {
       ...(init?.body ? { "content-type": "application/json" } : {}),

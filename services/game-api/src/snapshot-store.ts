@@ -69,7 +69,7 @@ export class RedisSnapshotStorage implements SnapshotStorage {
 
   constructor(url: string) {
     this.client = createClient({ url });
-    this.client.on("error", (error) => {
+    this.client.on("error", (error: Error) => {
       this.ready = false;
       console.error(JSON.stringify({ level: "error", message: "redis client error", error: error.message }));
     });
@@ -109,7 +109,7 @@ export class RedisSnapshotStorage implements SnapshotStorage {
     const keys = await this.client.keys("color-turf:room:*:snapshot");
     if (keys.length === 0) return [];
     const values = await this.client.mGet(keys);
-    return values.filter((value): value is string => Boolean(value)).map((value) => JSON.parse(value) as PersistedRoomState);
+    return values.filter((value: string | null): value is string => Boolean(value)).map((value: string) => JSON.parse(value) as PersistedRoomState);
   }
 
   async acquireLease(roomCode: string, owner: string, ttlMs: number): Promise<boolean> {
